@@ -3,7 +3,7 @@ extends CharacterBody2D
 enum DIRECTION {LEFT, RIGHT, UP, DOWN}
 
 const GRID_SIZE = 16
-const SPEED = GRID_SIZE * 4
+const SPEED = GRID_SIZE * 5
 var real_dir = DIRECTION.DOWN
 var finished_last_move = true
 var next_position = Vector2()
@@ -14,9 +14,35 @@ func _ready():
 	$AnimatedSprite2D.play("front_idle")
 
 func _physics_process(delta):
-	player_movement(delta)
+	click_movement(delta)
 
-func player_movement(delta):
+# Click Movement
+func _input(event):
+	if event.is_action_pressed("ui_select"):
+		next_position = ((floor(get_global_mouse_position() / 16)* 16) +
+			Vector2(8, -8))
+		velocity = position.direction_to(next_position) * SPEED
+		var angle = velocity.angle()
+		print(angle)
+		if (abs(angle) <= PI/4):
+			real_dir = DIRECTION.RIGHT
+		elif (abs(angle) > (3*PI/4)):
+			real_dir = DIRECTION.LEFT
+		elif (angle > 0):
+			real_dir = DIRECTION.DOWN
+		else:
+			real_dir = DIRECTION.UP
+		update_animation()
+
+func click_movement(delta):
+	if position.distance_to(next_position) < 2:
+		velocity = Vector2(0, 0)
+		position = next_position
+		update_animation()
+	move_and_slide()
+
+# WASD Movement
+func wasd_movement(delta):
 
 	# Close enough to having finished the last movement command
 	finished_last_move = position.distance_to(next_position) < 1
