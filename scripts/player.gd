@@ -6,24 +6,31 @@ const GRID_SIZE = 16
 const SPEED = GRID_SIZE * 5
 var real_dir = DIRECTION.DOWN
 var finished_last_move = true
+var current_cell = Vector2i()
 var next_position = Vector2()
 
 func _ready():
 	next_position.x = position.x
 	next_position.y = position.y
+	current_cell = Vector2i(floor(position) / 16)
+	randomize()
 	$AnimatedSprite2D.play("front_idle")
 
 func _physics_process(delta):
 	click_movement(delta)
 
-# Click Movement
 func _input(event):
+	# Click Cell-based Movement
 	if event.is_action_pressed("ui_select"):
-		next_position = ((floor(get_global_mouse_position() / 16)* 16) +
-			Vector2(8, -8))
+		approach_cell(Vector2i(floor(get_global_mouse_position()) / 16))
+	# Random Range Cell-based Movement
+	elif event.is_action_pressed("do_next"):
+		approach_cell(Vector2i(randi() % 12, randi() % 8))
+
+func approach_cell(next_cell):
+		next_position = Vector2(next_cell * 16) + Vector2(8, -8)
 		velocity = position.direction_to(next_position) * SPEED
 		var angle = velocity.angle()
-		print(angle)
 		if (abs(angle) <= PI/4):
 			real_dir = DIRECTION.RIGHT
 		elif (abs(angle) > (3*PI/4)):
@@ -37,6 +44,7 @@ func _input(event):
 func click_movement(delta):
 	if position.distance_to(next_position) < 2:
 		velocity = Vector2(0, 0)
+		current_cell = Vector2i(floor(position) / 16)
 		position = next_position
 		update_animation()
 	move_and_slide()
