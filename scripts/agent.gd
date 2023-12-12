@@ -11,6 +11,7 @@ var real_dir = DIRECTION.DOWN
 var finished_last_move = true
 var current_cell = Vector2i()
 var next_position = Vector2()
+var turn_in_progress = false
 
 func init_position(cell:Vector2i = Vector2i(0, 1)):
 	current_cell = cell
@@ -38,6 +39,7 @@ func approach_cell(next_cell):
 			real_dir = DIRECTION.DOWN
 		else:
 			real_dir = DIRECTION.UP
+		turn_in_progress = true
 		update_animation()
 
 func grid_movement():
@@ -45,6 +47,7 @@ func grid_movement():
 		velocity = Vector2(0, 0)
 		current_cell = Vector2i(floor(position) / GRID_SIZE)
 		position = next_position
+		turn_in_progress = false
 		update_animation()
 	move_and_slide()
 
