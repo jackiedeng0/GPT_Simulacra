@@ -15,13 +15,24 @@ func _ready():
 		agent_instance.init_position(Vector2i(randi() % 14, randi() % 8 + 1))
 		agents.append(agent_instance)
 		add_child(agent_instance)
+	# Set up API calls
+	$HTTPRequest.request_completed.connect(_on_request_completed)
+
 
 func _input(event):
 	# Random Range Cell-based Movement
 	if event.is_action_pressed("do_next") and not turn_in_progress:
 		for agent in agents:
+			# Movement
 			agent.approach_cell(Vector2i(randi() % 14, randi() % 8 + 1))
+		# Initiate API call (placeholder)
+		$HTTPRequest.request("https://uselessfacts.jsph.pl/api/v2/facts/random")
 		turn_in_progress = true
+
+
+func _on_request_completed(result, response_code, headers, body):
+		var json = JSON.parse_string(body.get_string_from_utf8())
+		$TextBox/TextOutput.text = json["text"]
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -31,5 +42,6 @@ func _process(delta):
 	for agent in agents:
 		if agent.turn_in_progress == true:
 			_temp_turn_in_progress = true
+			break
 	turn_in_progress = _temp_turn_in_progress
 	pass
