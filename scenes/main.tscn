@@ -468,13 +468,13 @@ offset_bottom = 168.0
 color = Color(0.403922, 0.403922, 0.403922, 1)
 
 [node name="TextOutput" type="Label" parent="TextBox"]
+layout_mode = 0
 offset_left = 3.0
 offset_top = 2.0
 offset_right = 221.0
 offset_bottom = 22.0
 theme_override_constants/line_spacing = -1
-theme_override_font_sizes/font_size = 6
-text = "[API output
-here]"
+theme_override_font_sizes/font_size = 5
+text = "..."
 horizontal_alignment = 1
 autowrap_mode = 2
