@@ -1,7 +1,5 @@
 extends Node2D
 
-const INITIAL_AGENTS_COUNT = 1
-
 var agents = Array()
 var turn_in_progress = false
 var _temp_turn_in_progress = false
@@ -13,15 +11,19 @@ var last_response = ""
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	# Create an agent
+	# Create agents from simulation export
+	var simulation_file = FileAccess.open("res://simulacra/simulation.export", FileAccess.READ)
+	var simulation_json = JSON.parse_string(simulation_file.get_as_text())
+
 	var agent_scene = preload("res://scenes/agent.tscn")
-	for i in range(INITIAL_AGENTS_COUNT):
+	for agent in simulation_json["agents"]:
 		var agent_instance = agent_scene.instantiate()
-		agent_instance.init_position(Vector2i(randi() % 14, randi() % 8 + 1))
+		agent_instance.init_position(Vector2i(agent["start_pos"]["x"], agent["start_pos"]["y"]))
+		agent_instance.display_name = agent["name"]
 		agents.append(agent_instance)
 		add_child(agent_instance)
 	# Set up API calls, load key
-	var key_file = FileAccess.open("res://api.key", FileAccess.READ)
+	var key_file = FileAccess.open("res://simulacra/api.key", FileAccess.READ)
 	api_key = key_file.get_as_text()
 	api_headers.append("Authorization: Bearer " + api_key)
 	$HTTPRequest.request_completed.connect(_on_request_completed)
@@ -44,7 +46,6 @@ func _input(event):
 			\"temperature\": 0.7,
 			\"max_tokens\": 70
 			}"
-			# \"max_tokens:\": 100
 		$HTTPRequest.request(api_endpoint, api_headers, HTTPClient.METHOD_POST, body)
 		turn_in_progress = true
 

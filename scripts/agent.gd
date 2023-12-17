@@ -7,6 +7,7 @@ enum DIRECTION {LEFT, RIGHT, UP, DOWN}
 const GRID_SIZE = 16
 const GRID_OFFSET = 8
 const SPEED = GRID_SIZE * 5
+var display_name = ""
 var real_dir = DIRECTION.DOWN
 var finished_last_move = true
 var current_cell = Vector2i()
@@ -23,6 +24,7 @@ func _ready():
 	current_cell = Vector2i(floor(position) / GRID_SIZE)
 	randomize()
 	$AnimatedSprite2D.play("front_idle")
+	$Label.text = display_name
 
 func _physics_process(_delta):
 	grid_movement()
